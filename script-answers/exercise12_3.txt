@@ -1,0 +1,6 @@
+root@2254f86bbad5:/usr/src/app# ls
+index.js
+root@2254f86bbad5:/usr/src/app# nano index.js
+root@2254f86bbad5:/usr/src/app# more index.js
+console.log('Hello World')
+root@2254f86bbad5:/usr/src/app#
