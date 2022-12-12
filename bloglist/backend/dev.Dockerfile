@@ -6,7 +6,4 @@ COPY . .
 
 RUN npm install
 
-CMD [ "npm", "uninstall", "bcrypt" ]
-CMD [ "npm", "install", "bcrypt" ]
-
 CMD ["npm", "run", "dev"]
