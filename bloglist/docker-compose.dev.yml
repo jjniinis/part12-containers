@@ -1,0 +1,53 @@
+services:
+  app:
+    image: bloglist-front-dev
+    build:
+      context: ./frontend/
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./frontend/:/usr/src/app
+    environment:
+      CHOKIDAR_USEPOLLING: true
+      DANGEROUSLY_DISABLE_HOST_CHECK: true
+      REACT_APP_BACKEND_URL: http://localhost:8080/api
+    ports:
+      - 3000:3000
+    container_name: bloglist-front-dev
+  nginx:
+    image: nginx:1.20.1
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    container_name: bloglist-reverseproxy
+    depends_on:
+      - app
+  mongo:
+    image: mongo
+    ports:
+      - 3456:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: the_database
+    volumes: 
+      - ./backend/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - ./backend/mongo_data:/data/db
+  server:
+    image: bloglist-back-dev
+    build:
+      context: ./backend/
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./backend/:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3003:3003
+    container_name: bloglist-back-dev
+    environment:
+      MONGODB_URI: mongodb://the_username:the_password@mongo:27017/the_database
+      PORT: 3003
+      SECRET: SUPERduperSECRET555
+      CHOKIDAR_USEPOLLING: true
+    depends_on:
+      - mongo
